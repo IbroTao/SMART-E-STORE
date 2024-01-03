@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -25,6 +25,26 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    role: {
+      type: String,
+      default: "user",
+    },
+    cart: {
+      type: Array,
+      default: [],
+    },
+    address: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Address",
+      },
+    ],
+    wishlist: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -32,12 +52,12 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  const salt = await bcrypt.genSaltSync(10);
+  const salt = bcrypt.genSaltSync(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
 userSchema.methods.isPasswordMatched = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.pasword);
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 module.exports = mongoose.model("User", userSchema);
