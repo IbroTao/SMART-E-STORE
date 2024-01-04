@@ -70,6 +70,29 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
   });
 });
 
+// LOGOUT USER
+const logoutUser = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  if (!cookie.refreshToken) throw new Error("No Refresh Token in Cookies");
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if (!user) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.sendStatus(204); // Forbidden
+  }
+  await User.findOneAndUpdate(refreshToken, {
+    refreshToken: "",
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+  });
+  return res.sendStatus(204); // Forbidden
+});
+
 // UPDATE A USER
 const updateUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -145,6 +168,7 @@ const blockUser = asyncHandler(async (req, res) => {
   }
 });
 
+// UNBLOCK USER
 const unblockUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
@@ -174,4 +198,5 @@ module.exports = {
   blockUser,
   unblockUser,
   handleRefreshToken,
+  logoutUser,
 };
