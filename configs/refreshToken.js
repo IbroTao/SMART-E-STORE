@@ -5,5 +5,5 @@ const generateRefreshToken = (id) => {
 };
 
 module.exports = {
-  refreshToken,
+  generateRefreshToken,
 };
