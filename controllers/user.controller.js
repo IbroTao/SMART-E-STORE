@@ -37,10 +37,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
 // UPDATE A USER
 const updateUser = asyncHandler(async (req, res) => {
-  const { id } = req.user;
+  const { _id } = req.user;
   try {
-    const user = await User.findByIdAndUpdate(
-      id,
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
       {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -51,7 +51,7 @@ const updateUser = asyncHandler(async (req, res) => {
         new: true,
       }
     );
-    res.status(200).json(user);
+    res.status(200).json(updatedUser);
   } catch (error) {
     throw new Error(error);
   }
