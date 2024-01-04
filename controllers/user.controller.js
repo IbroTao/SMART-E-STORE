@@ -3,6 +3,7 @@ const { generateToken } = require("../configs/jwtToken");
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const { generateRefreshToken } = require("../configs/refreshToken");
+const jwt = require('jsonwebtoken');
 
 // CREATE A NEW USER
 const createUser = asyncHandler(async (req, res) => {
@@ -54,7 +55,13 @@ const loginUser = asyncHandler(async (req, res) => {
 // HANDLE REFRESH TOKEN
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
-  console.log(cookie);
+  if (!cookie.refreshToken) throw new Error("No Refresh Token in Cookies");
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if(!user) throw new Error("No Refresh Token present or Token ")
+  jwt.verify(refreshToken, process.env.SECRET, (err, decoded => {
+    if(err || user.name)
+  }))
 });
 
 // UPDATE A USER
