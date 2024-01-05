@@ -83,9 +83,12 @@ const logoutUser = asyncHandler(async (req, res) => {
     });
     return res.sendStatus(204); // Forbidden
   }
-  await User.findOneAndUpdate(refreshToken, {
-    refreshToken: "",
-  });
+  const logout = await User.findOneAndUpdate(
+    { refreshToken },
+    {
+      refreshToken: "",
+    }
+  );
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: true,
