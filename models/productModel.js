@@ -22,12 +22,12 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      type: String,
+      required: true,
     },
     brand: {
       type: String,
-      enum: ["Apple", "Lenovo", "HP", "Dell"],
+      required: true,
     },
     sold: {
       type: Number,
@@ -42,7 +42,7 @@ const productSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      enum: ["Black", "Brown", "White", "Red", "Blue"],
+      required: true,
     },
     ratings: [
       {
