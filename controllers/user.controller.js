@@ -93,7 +93,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   });
-  return res.sendStatus(204); // Forbidden
+  res.sendStatus(204); // Forbidden
 });
 
 // UPDATE A USER
