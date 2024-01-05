@@ -21,10 +21,18 @@ const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body);
-    }
-    const product = await Product.findOneAndUpdate({});
+    const product = await Product.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    res.status(200).json(product);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// DELETE PRODUCT
+const deleteProduct = asyncHandler(async (req, res) => {
+  try {
   } catch (error) {
     throw new Error(error);
   }
@@ -33,7 +41,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 // GET A PRODUCT
 const getProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  validMongoDbId(id);
+  validateMongoDbId(id);
   try {
     const product = await Product.findById(id);
     res.status(200).json(product);
@@ -45,7 +53,9 @@ const getProduct = asyncHandler(async (req, res) => {
 // GET ALL PRODUCTS
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({
+      createdBy: "desc",
+    });
     res.status(200).json(products);
   } catch (error) {
     throw new Error(error);
@@ -55,5 +65,6 @@ const getAllProducts = asyncHandler(async (req, res) => {
 module.exports = {
   createProduct,
   getProduct,
+  updateProduct,
   getAllProducts,
 };
