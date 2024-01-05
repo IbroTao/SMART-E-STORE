@@ -16,7 +16,7 @@ const router = Router();
 
 router.post("/register", createUser);
 router.post("/login", loginUser);
-router.get("/all", authMiddleware, isAdmin, getAllUsers);
+router.get("/all", getAllUsers);
 router.get("/refresh", handleRefreshToken);
 router.get("/logout", logoutUser);
 router.get("/:id", authMiddleware, isAdmin, getSingleUser);

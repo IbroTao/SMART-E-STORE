@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 
 const dbConnect = require("./configs/mongoDbConnect");
+const bodyParser = require("body-parser");
 const authRoute = require("./routes/auth.routes");
 const productRoute = require("./routes/product.routes");
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 

@@ -4,11 +4,11 @@ const router = Router();
 const {
   createProduct,
   getProduct,
-  getProducts,
+  getAllProducts,
 } = require("../controllers/product.controller");
 
 router.post("/create", createProduct);
-router.get("/", getProducts);
+router.get("/all", getAllProducts);
 router.get("/:id", getProduct);
 
 module.exports = router;
