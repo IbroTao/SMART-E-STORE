@@ -32,7 +32,10 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 // DELETE PRODUCT
 const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   try {
+    const product = await Product.findByIdAndDelete(id);
+    res.status(200).json({ message: "Product deleted" });
   } catch (error) {
     throw new Error(error);
   }
@@ -67,4 +70,5 @@ module.exports = {
   getProduct,
   updateProduct,
   getAllProducts,
+  deleteProduct,
 };

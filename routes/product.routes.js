@@ -6,11 +6,15 @@ const {
   getProduct,
   getAllProducts,
   updateProduct,
+  deleteProduct,
 } = require("../controllers/product.controller");
 
-router.post("/create", createProduct);
+const { isAdmin, authMiddleware } = require("../middlewares/authMiddleware");
+
+router.post("/create", authMiddleware, isAdmin, createProduct);
 router.get("/all", getAllProducts);
 router.get("/:id", getProduct);
-router.put("/:id", updateProduct);
+router.put("/:id", authMiddleware, isAdmin, updateProduct);
+router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
 
 module.exports = router;

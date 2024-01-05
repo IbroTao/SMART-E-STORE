@@ -32,10 +32,12 @@ const productSchema = new mongoose.Schema(
     sold: {
       type: Number,
       default: 0,
+      select: false,
     },
     quantity: {
       type: Number,
       required: true,
+      select: false,
     },
     images: {
       type: Array,
