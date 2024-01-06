@@ -86,7 +86,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
     }
 
     // Pagination
-    const page = req.body.page;
+    const page = req.query.page;
+    const limit = req.query.limit;
+    const skip = (page - 1) * limit;
+    console.log(page, limit, skip);
 
     const product = await query;
     res.status(200).json(product);
