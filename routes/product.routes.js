@@ -12,7 +12,7 @@ const {
 const { isAdmin, authMiddleware } = require("../middlewares/authMiddleware");
 
 router.post("/create", authMiddleware, isAdmin, createProduct);
-router.get("/all", getAllProducts);
+router.get("/all", authMiddleware, getAllProducts);
 router.get("/:id", getProduct);
 router.put("/:id", authMiddleware, isAdmin, updateProduct);
 router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
