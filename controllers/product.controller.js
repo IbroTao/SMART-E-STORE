@@ -56,7 +56,10 @@ const getProduct = asyncHandler(async (req, res) => {
 // GET ALL PRODUCTS
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find(req.query);
+    const products = await Product.find({
+      brand: req.query.brand,
+      category: req.body.category,
+    });
     res.status(200).json(products);
   } catch (error) {
     throw new Error(error);
