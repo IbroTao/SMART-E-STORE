@@ -67,13 +67,14 @@ const getAllProducts = asyncHandler(async (req, res) => {
       (match) => `$${match}`
     );
 
-    const query = Product.find(JSON.parse(queryString));
+    let query = Product.find(JSON.parse(queryString));
 
     // Sorting
     if (req.query.sort) {
       const sortBy = req.query.sort.spliit(",").join("");
-      query = query.sort("category");
+      query = query.sort(sortBy);
     } else {
+      query = query.sort("-createdAt");
     }
     const product = await query;
     res.status(200).json(product);
