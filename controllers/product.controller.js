@@ -56,9 +56,7 @@ const getProduct = asyncHandler(async (req, res) => {
 // GET ALL PRODUCTS
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find().sort({
-      createdBy: "desc",
-    });
+    const products = await Product.find(req.query);
     res.status(200).json(products);
   } catch (error) {
     throw new Error(error);
