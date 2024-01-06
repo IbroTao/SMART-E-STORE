@@ -200,6 +200,10 @@ const updatePassword = asyncHandler(async (req, res) => {
     const user = await User.findById(_id);
     if (password) {
       user.password = password;
+      const updatedPassword = await User.save();
+      res.status(200).json(updatedPassword);
+    } else {
+      res.status(200).json(user);
     }
   } catch (error) {
     throw new Error(error);
