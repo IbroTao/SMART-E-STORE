@@ -221,4 +221,5 @@ module.exports = {
   unblockUser,
   handleRefreshToken,
   logoutUser,
+  updatePassword,
 };
