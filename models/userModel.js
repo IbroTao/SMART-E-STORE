@@ -51,6 +51,15 @@ const userSchema = new mongoose.Schema(
     ],
     refreshToken: {
       type: String
+    },
+    passwordChangedAt: {
+      type: Date
+    },
+    passwordResetToken: {
+      type: String
+    },
+    passwordResetTokenExpires: {
+      type: Date
     }
   },
   {
@@ -59,6 +68,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
+  if()
   const salt = bcrypt.genSaltSync(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
