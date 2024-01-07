@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isPasswordModified("password")) {
+  if (!this.isModified("password")) {
     next();
   }
   const salt = bcrypt.genSaltSync(10);
@@ -81,13 +81,13 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
 };
 
 userSchema.methods.createPasswordResetToken = async function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resettoken = crypto.randomBytes(32).toString("hex");
   this.passwordResetToken = crypto
     .createHash("sha256")
-    .update(resetToken)
+    .update(resettoken)
     .digest("hex");
   this.passwordResetTokenExpires = Date.now() + 30 * 60 * 1000; // 10 Minutes
-  return resetToken;
+  return resettoken;
 };
 
 module.exports = mongoose.model("User", userSchema);
