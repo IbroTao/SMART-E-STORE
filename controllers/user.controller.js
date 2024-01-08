@@ -210,6 +210,32 @@ const updatePassword = asyncHandler(async (req, res) => {
   }
 });
 
+const createPasswordResetToken = async function () {
+  try {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.passwordResetTokenExpires = Date.now() + 30 * 60 * 1000; // 30 Minutes
+
+    // Assuming req.user is an instance of your User model
+    const user = await User.findById(this._id);
+
+    // Update user object directly (Note: This is not a typical use case)
+    user.passwordResetToken = this.passwordResetToken;
+    user.passwordResetTokenExpires = this.passwordResetTokenExpires;
+
+    // Save the updated user document
+    await user.save();
+
+    return resetToken;
+    s;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
