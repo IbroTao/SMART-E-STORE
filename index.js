@@ -5,6 +5,7 @@ const dbConnect = require("./configs/mongoDbConnect");
 const bodyParser = require("body-parser");
 const authRoute = require("./routes/auth.routes");
 const productRoute = require("./routes/product.routes");
+const blogRoute = require("./routes/blog.routes");
 const cookieParser = require("cookie-parser");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);
+app.use("/api/blog", blogRoute);
 
 app.use(notFound);
 app.use(errorHandler);
