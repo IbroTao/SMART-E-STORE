@@ -260,6 +260,33 @@ const forgetPasswordToken = asyncHandler(async (req, res) => {
   }
 });
 
+// RESET PASSWORD
+const resetPassword = asyncHandler(async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "Token expired!, Try again." });
+    } else {
+      user.password = hashSync(password, 12);
+      user.passwordResetToken = null;
+      user.passwordResetTokenExpires = null;
+      const newUser = await user.save();
+      res
+        .status(200)
+        .json({ message: "Password reset successfully.", user: newUser });
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -272,4 +299,5 @@ module.exports = {
   handleRefreshToken,
   logoutUser,
   forgetPasswordToken,
+  resetPassword,
 };
