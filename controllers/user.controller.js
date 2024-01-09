@@ -6,6 +6,11 @@ const { generateRefreshToken } = require("../configs/refreshToken");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { hashSync, compareSync } = require("bcrypt");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+const sender = process.env.SENDER;
+const emailAccess = process.env.PASS;
 
 // CREATE A NEW USER
 const createUser = asyncHandler(async (req, res) => {
@@ -205,8 +210,55 @@ function generatePasswordResetToken() {
   return crypto.randomBytes(20).toString("hex");
 }
 
+// CONFIGURING EMAIL
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: sender,
+    pass: emailAccess,
+  },
+});
+
+function sendResetEmail(email, resetToken) {
+  const resetLink = `http://localhost:5000/api/user/reset-password/${resetToken}`;
+  const mailOptions = {
+    from: sender,
+    to: email,
+    subject: "Reset Password Link",
+    text: `<h2>Click here to reset your email: ${resetLink}</h2>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending reset email:", error);
+    } else {
+      console.log("Reset email sent:", info.response);
+    }
+  });
+}
+
 // FORGET PASSWORD TOKEN
-const forgetPasswordToken = asyncHandler();
+const forgetPasswordToken = asyncHandler(async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const resetToken = generatePasswordResetToken();
+    user.passwordResetToken = resetToken;
+    user.passwordResetTokenExpires = Date.now() + 30 * 60 * 100;
+    const newUser = await user.save();
+
+    sendResetEmail(email, resetToken);
+    res.status(200).json({
+      message: "Reset Email sent. Check your inbox",
+      token: resetToken,
+      user: newUser,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 module.exports = {
   createUser,
