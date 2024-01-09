@@ -4,14 +4,22 @@ const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const { generateRefreshToken } = require("../configs/refreshToken");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { hashSync, compareSync } = require("bcrypt");
 
 // CREATE A NEW USER
 const createUser = asyncHandler(async (req, res) => {
-  const email = req.body.email;
+  const { email } = req.body;
   const findUser = await User.findOne({ email });
   if (!findUser) {
     // CREATE A NEW USER
-    const user = await User.create(req.body);
+    const user = await User.create({
+      firstname,
+      lastname,
+      email,
+      mobile,
+      password: hashSync(password, 10),
+    });
     res.status(201).json(user);
   } else {
     // USER ALREADY EXISTS
@@ -24,32 +32,33 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   // CHECK IF NEW USER EXISTS
   const findUser = await User.findOne({ email });
-  if (findUser && (await findUser.isPasswordMatched(password))) {
-    const refreshToken = await generateRefreshToken(findUser._id);
-    const updatedUser = await User.findByIdAndUpdate(
-      findUser.id,
-      {
-        refreshToken: refreshToken,
-      },
-      {
-        new: true,
-      }
-    );
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 72 * 60 * 60 * 1000,
-    });
-    res.status(200).json({
-      _id: findUser?._id,
-      firstname: findUser?.firstname,
-      lastname: findUser?.lastname,
-      email: findUser?.email,
-      mobile: findUser?.mobile,
-      token: generateToken(findUser?._id),
-    });
-  } else {
-    throw new Error("Invalid Credentials");
-  }
+  if (!findUser) return res.status(404).json({ message: "User not found!" });
+
+  const comparePassword = compareSync(password, user.password);
+  if (!comparePassword)
+    return res.status(400).json({ message: "Invalid Credentials!" });
+
+  const refreshToken = generateRefreshToken(findUser._id);
+  const updatedUser = await User.findByIdAndUpdate(
+    findUser.id,
+    {
+      refreshToken: refreshToken,
+    },
+    {
+      new: true,
+    }
+  );
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 72 * 60 * 60 * 1000,
+  });
+  res.status(200).json({
+    _id: findUser?._id,
+    firstname: findUser?.firstname,
+    lastname: findUser?.lastname,
+    email: findUser?.email,
+    mobile: findUser?.mobile,
+  });
 });
 
 // HANDLE REFRESH TOKEN
@@ -191,50 +200,13 @@ const unblockUser = asyncHandler(async (req, res) => {
   }
 });
 
-// UPDATE PASSWORD
-const updatePassword = asyncHandler(async (req, res) => {
-  try {
-    const { _id } = req.user;
-    const { password } = req.body;
-    validateMongoDbId(_id);
-    const user = await User.findById(_id);
-    if (password) {
-      user.password = password;
-      const updatedPassword = await user.save();
-      res.status(200).json(updatedPassword);
-    } else {
-      res.status(400).json("Password is required");
-    }
-  } catch (error) {
-    throw new Error(error);
-  }
-});
+// FUNCTION TO GENERATE PASSWORD TOKEN
+function generatePasswordResetToken() {
+  return crypto.randomBytes(20).toString("hex");
+}
 
-const createPasswordResetToken = async function () {
-  try {
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    this.passwordResetToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-    this.passwordResetTokenExpires = Date.now() + 30 * 60 * 1000; // 30 Minutes
-
-    // Assuming req.user is an instance of your User model
-    const user = await User.findById(this._id);
-
-    // Update user object directly (Note: This is not a typical use case)
-    user.passwordResetToken = this.passwordResetToken;
-    user.passwordResetTokenExpires = this.passwordResetTokenExpires;
-
-    // Save the updated user document
-    await user.save();
-
-    return resetToken;
-    s;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
+// FORGET PASSWORD TOKEN
+const forgetPasswordToken = asyncHandler();
 
 module.exports = {
   createUser,
@@ -247,5 +219,5 @@ module.exports = {
   unblockUser,
   handleRefreshToken,
   logoutUser,
-  updatePassword,
+  forgetPasswordToken,
 };
