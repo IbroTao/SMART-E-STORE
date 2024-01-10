@@ -14,7 +14,7 @@ const emailAccess = process.env.PASS;
 
 // CREATE A NEW USER
 const createUser = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+  const { email, firstname, lastname, mobile, password } = req.body;
   const findUser = await User.findOne({ email });
   if (!findUser) {
     // CREATE A NEW USER
@@ -39,7 +39,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const findUser = await User.findOne({ email });
   if (!findUser) return res.status(404).json({ message: "User not found!" });
 
-  const comparePassword = compareSync(password, user.password);
+  const comparePassword = compareSync(password, findUser.password);
   if (!comparePassword)
     return res.status(400).json({ message: "Invalid Credentials!" });
 
