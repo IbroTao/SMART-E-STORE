@@ -5,7 +5,7 @@ const validateMongodbId = require("../utils/validateMongodbId");
 const createBlog = asyncHandler(async (req, res) => {
   try {
     const blog = await Blog.create(req.body);
-    res.status(201).json({ message: "Blog created successfully" });
+    res.status(201).json({ message: "Blog created successfully", blog: blog });
   } catch (error) {
     throw new Error(error);
   }
@@ -15,7 +15,7 @@ const updateBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
-    const blog = await Blog.findByIdAndUpdate(id, re.body, {
+    const blog = await Blog.findByIdAndUpdate(id, req.body, {
       new: true,
     });
     res.status(200).json({ message: "Blog updated successfully", blog: blog });
