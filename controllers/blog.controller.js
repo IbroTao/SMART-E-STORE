@@ -29,9 +29,7 @@ const getSingleBlog = asyncHandler(async (req, res) => {
   validateMongodbId(id);
   try {
     const blog = await Blog.findById(id);
-    if (!blog) return res.status(404).json({ message: "Blog not found!" });
-
-    await Blog.findByIdAndUpdate(
+    const updatedViews = await Blog.findByIdAndUpdate(
       id,
       {
         $inc: {
@@ -42,7 +40,7 @@ const getSingleBlog = asyncHandler(async (req, res) => {
         new: true,
       }
     );
-    res.status(200).json(blog);
+    res.status(200).json(blog, updatedViews);
   } catch (error) {
     throw new Error(error);
   }
