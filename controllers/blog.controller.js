@@ -31,7 +31,18 @@ const getSingleBlog = asyncHandler(async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found!" });
 
-    res.status(200).json({ blog: blog });
+    await Blog.findByIdAndUpdate(
+      id,
+      {
+        $inc: {
+          numViews: 1,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json(blog);
   } catch (error) {
     throw new Error(error);
   }
