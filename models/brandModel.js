@@ -9,7 +9,7 @@ const brandSchema = new mongoose.Schema(
     },
   },
   {
-    new: true,
+    timestamps: true,
   }
 );
 
