@@ -55,6 +55,10 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+    totalRatings: {
+      type: String,
+      default: 0,
+    },
   },
   {
     timestamps: true,
