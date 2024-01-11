@@ -84,9 +84,56 @@ const likeBlog = asyncHandler(async (req, res) => {
   try {
     // Find the blog a user wants to like
     const blog = await Blog.findById(blogId);
-    const userId = req.user._id;
 
+    // Find the logged-in user
+    const loginUserId = req.user._id;
+
+    // Find if the user has already liked the post
     const isLiked = blog.isLiked;
+
+    // Find if the user disliked the post
+    const disLiked = blog.isDisliked.find(
+      (userId = userId.toString() === loginUserId.toString())
+    );
+
+    if (disLiked) {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { dislikes: loginUserId },
+          isDisliked: false,
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json(blog);
+    }
+    if (isLiked) {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { likes: loginUserId },
+          isLiked: false,
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json(blog);
+    } else {
+      const blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $push: { likes: loginUserId },
+          isLiked: true,
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json(blog);
+    }
   } catch (error) {
     throw new Error(error);
   }
