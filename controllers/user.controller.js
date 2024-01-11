@@ -66,6 +66,41 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
+// LOGIN AN ADMIN
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  // CHECK IF NEW ADMIN EXISTS
+  const findAdmin = await User.findOne({ email });
+  if (findAdmin.role !== "admin") throw new Error("Not Authorized!");
+  if (!findAdmin) return res.status(404).json({ message: "Admin not found!" });
+
+  const comparePassword = compareSync(password, findAdmin.password);
+  if (!comparePassword)
+    return res.status(400).json({ message: "Invalid Credentials!" });
+
+  const refreshToken = generateRefreshToken(findAdmin._id);
+  const updatedAdmin = await User.findByIdAndUpdate(
+    findAdmin.id,
+    {
+      refreshToken: refreshToken,
+    },
+    {
+      new: true,
+    }
+  );
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 72 * 60 * 60 * 1000,
+  });
+  res.status(200).json({
+    _id: findAdmin?._id,
+    firstname: findAdmin?.firstname,
+    lastname: findAdmin?.lastname,
+    email: findAdmin?.email,
+    mobile: findAdmin?.mobile,
+  });
+});
+
 // HANDLE REFRESH TOKEN
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
@@ -300,4 +335,5 @@ module.exports = {
   logoutUser,
   forgetPasswordToken,
   resetPassword,
+  loginAdmin,
 };
