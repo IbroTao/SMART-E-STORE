@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const authRouter = require("./routes/auth.routes");
 const productRouter = require("./routes/product.routes");
 const blogRouter = require("./routes/blog.routes");
-const categoryRouter = require("./routes/category.routes");
+const categoryRouter = require("./routes/productCategory.routes");
 const cookieParser = require("cookie-parser");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 

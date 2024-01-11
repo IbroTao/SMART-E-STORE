@@ -1,7 +1,10 @@
 const { Router } = require("express");
 const router = Router();
 
-const { createCategory } = require("../controllers/category.controller");
+const {
+  createCategory,
+  getAllCategories,
+} = require("../controllers/productCategory.controller");
 
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 
