@@ -125,8 +125,8 @@ const likeBlog = asyncHandler(async (req, res) => {
       const blog = await Blog.findByIdAndUpdate(
         blogId,
         {
-          $push: { likes: loginUserId },
-          isLiked: true,
+          $push: { dislikes: loginUserId },
+          isDisliked: true,
         },
         {
           new: true,
@@ -202,4 +202,5 @@ module.exports = {
   getAllBlogs,
   deleteBlog,
   likeBlog,
+  dislikeBlog,
 };
