@@ -28,7 +28,7 @@ const orderSchema = new mongoose.Schema(
         "Cancelled",
       ],
     },
-    orderedBy: {
+    orderBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
