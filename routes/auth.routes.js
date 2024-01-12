@@ -25,7 +25,7 @@ router.post("/login", loginUser);
 router.post("/admin-login", loginAdmin);
 router.post("/forget-password-token", forgetPasswordToken);
 router.post("/reset-password/:token", resetPassword);
-router.post("/cart", authMiddleware, isAdmin, userCart);
+router.post("/cart", authMiddleware, userCart);
 router.get("/", getAllUsers);
 router.get("/wishlist", authMiddleware, getWishlist);
 router.get("/refresh", handleRefreshToken);
