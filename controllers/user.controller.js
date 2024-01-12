@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const Coupon = require("../models/couponModel");
 const { generateToken } = require("../configs/jwtToken");
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
@@ -409,6 +410,28 @@ const getUserCart = asyncHandler(async (req, res) => {
   }
 });
 
+const emptyCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    const user = await User.findOne({ _id });
+    const cart = await Cart.findOneAndRemove({ orderBy: user._id });
+    res.status(200).json({ mesage: "Cart emptied!" });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const applyCoupon = asyncHandler(async (req, res) => {
+  const { coupon } = req.body;
+  try {
+    const validCoupon = await Coupon.findOne({ name: coupon });
+    console.log(validCoupon);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -427,4 +450,6 @@ module.exports = {
   saveAddress,
   userCart,
   getUserCart,
+  emptyCart,
+  applyCoupon,
 };
