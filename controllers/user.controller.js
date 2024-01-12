@@ -397,11 +397,13 @@ const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
   try {
-    const cart = await Cart.findOne({ orderBy: _id });
+    const cart = await Cart.findOne({ orderBy: _id }).populate(
+      "products.product"
+    );
     if (!cart)
       return res.status(400).json({ message: "This user has no cart" });
 
-    res.status(200).json(cart);
+    res.status(200).json({ cart: cart });
   } catch (error) {
     throw new Error(error);
   }
