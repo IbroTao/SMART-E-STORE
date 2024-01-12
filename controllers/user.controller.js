@@ -382,7 +382,12 @@ const userCart = asyncHandler(async (req, res) => {
     for (let i = 0; i < products.length; i++) {
       cartTotal = cartTotal + products[i].price * products[i].count;
     }
-    console.log(products, cartTotal);
+    let newCart = await new Cart({
+      products,
+      cartTotal,
+      orderBy: user._id,
+    }).save();
+    res.status(200).json(newCart);
   } catch (error) {
     throw new Error(error);
   }
